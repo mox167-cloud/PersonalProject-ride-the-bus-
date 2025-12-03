@@ -18,6 +18,46 @@ namespace ProgettoRideTheBus.Murizzi
             int carta = random.Next(1,14);
             return carta;
         }
+        //generatore di colore (usato nel primo round)
+        static bool colore(int primocolore)
+        {
+            Random random = new Random(1);
+            int colore = random.Next(1, 3);
+            if (primocolore == colore)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        //generatore di seme (usato nel quarto round)
+        static int seme()
+        {
+            Random random = new Random(1);
+            int seme = random.Next(1, 5);
+            return seme;
+        }
+        static string converterseme(int semeutente) { 
+            
+            if (semeutente == 1)
+            {
+                return "Cuori";
+            }
+            else if (semeutente == 2)
+            {
+                return "Quadri";
+            }
+            else if (semeutente == 3)
+            {
+                return "Fiori";
+            }
+            else
+            {
+                return "Picche";
+            }
+        }
         //check della risposta alto/basso
         static bool checkaltobasso(int carta1, int carta2, string risposta)
         {
@@ -50,20 +90,6 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
-        //generatore di colore (usato nel primo round)
-        static bool colore(int primocolore)
-        {
-            Random random = new Random(1);
-            int colore = random.Next(1,3);
-            if (primocolore == colore)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         //check della risposta Y/N
         static bool risposta(string risposta)
             {
@@ -79,7 +105,7 @@ namespace ProgettoRideTheBus.Murizzi
         static void saluto()
         {
             Console.WriteLine("Grazie per aver giocato!");
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
             Console.Clear();
             Console.WriteLine("Grazie per aver giocato!\n" +
                 "(premere un tasto qualsiai per uscire)");
@@ -127,9 +153,8 @@ namespace ProgettoRideTheBus.Murizzi
                         Console.WriteLine("valore seconda carta= " + valorecarta2);
                         if (checkaltobasso(valorecarta1,valorecarta2,altobasso) == true)
                         {
-                            Console.WriteLine("Hai indovinato! Complimenti, hai vinto!");
-                            Thread.Sleep(2000);
                             Console.Clear();
+                            Console.WriteLine("Hai indovinato! Complimenti, hai vinto!");
                             Console.WriteLine("valore prima carta "+ valorecarta1);
                             Console.WriteLine("valore seconda carta " + valorecarta2); 
                             Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
@@ -146,20 +171,41 @@ namespace ProgettoRideTheBus.Murizzi
                                 {
                                     Console.WriteLine("Complimenti, hai indovinato l'intervalo di valore! ");
                                     Console.WriteLine("valore terza carta " + valorecarta3);
-                                    Thread.Sleep(2000);
-                                    Console.Clear();
                                     Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
                                     string richiesta4 = Console.ReadLine().ToUpper();
                                     if (risposta(richiesta4) == true) 
-                                    { 
-                                    
+                                    {
+                                        Console.Clear();
+                                        int semecarta = seme();
+                                        Console.WriteLine(semecarta);
+                                        Console.Write("Indovina il seme della quarta carta\n" +
+                                            "1 per Cuori\n" +
+                                            "2 per Quadri\n" +
+                                            "3 per Fiori\n" +
+                                            "4 per Picche\n" +
+                                            "inserisci un numero: ");
+                                        int semeutente = int.Parse(Console.ReadLine());
+                                        if (semecarta == semeutente)
+                                        {
+                                            Console.WriteLine("Complimenti, hai indovinato il seme della quarta carta!");
+                                            int valorecarta4 = carta();
+                                            string semecarta4String = converterseme(seme());
+                                            Console.WriteLine("valore quarta carta " + valorecarta4 + "\n1 per Cuori\n" + "2 per Quadri\n" + "3 per Fiori\n" + "4 per Picche\n");
+                                            Thread.Sleep(2000);
+                                            Console.Clear();
+                                            Console.WriteLine("Complimenti, hai completato tutti i round di Ride The Bus!");
+                                            saluto();
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Mi dispiace, non hai indovinato il seme della quarta carta.");
+                                            saluto();
+                                        }
+                                        //Console.WriteLine("WIP");
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Grazie per aver giocato!");
-                                        Thread.Sleep(2000);
-                                        Console.Clear();
-                                        Console.WriteLine("Grazie per aver giocato!");
+                                        saluto();
                                     }
 
                                 }
