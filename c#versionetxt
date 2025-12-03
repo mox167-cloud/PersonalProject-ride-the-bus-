@@ -34,6 +34,7 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
+        //check della risposta intervallo
         static bool checkintervallo(int carta1, int carta2, int carta3, string intervallo)
         {
             if (carta3 <= carta2 && carta3 >= carta1 && (intervallo =="Y")== true)
@@ -74,6 +75,14 @@ namespace ProgettoRideTheBus.Murizzi
             {
                 return false;
             }
+        }
+        static void saluto()
+        {
+            Console.WriteLine("Grazie per aver giocato!");
+            Thread.Sleep(1000);
+            Console.Clear();
+            Console.WriteLine("Grazie per aver giocato!\n" +
+                "(premere un tasto qualsiai per uscire)");
         }
 
         static void Main(string[] args)
@@ -122,60 +131,62 @@ namespace ProgettoRideTheBus.Murizzi
                             Thread.Sleep(2000);
                             Console.Clear();
                             Console.WriteLine("valore prima carta "+ valorecarta1);
-                            Console.WriteLine("valore seconda carta " + valorecarta2);
-                            string richiesta3 = Console.ReadLine();
-                            Console.Write("Hai indovinato l'intervalo di valore della seconda carta! Vuoi continuare? Y/N ");
+                            Console.WriteLine("valore seconda carta " + valorecarta2); 
+                            Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
+                            string richiesta3 = Console.ReadLine().ToUpper();
                             if (risposta(richiesta3) == true)
                             {
                                 Console.Clear();
                                 Console.WriteLine("valore prima carta " + valorecarta1);
                                 Console.WriteLine("valore seconda carta " + valorecarta2);
                                 int valorecarta3 = carta();
-                                Console.Write("la terza carta e' compresa nell'intervallo delle prime due carte? Y/N ");
+                                Console.Write("la terza carta e' compresa nell'intervallo interno delle prime due carte? Y/N ");
                                 string intervallo = Console.ReadLine().ToUpper();
-                                if (checkintervallo(valorecarta1, valorecarta2, valorecarta3,intervallo)== true)
+                                if (checkintervallo(valorecarta1, valorecarta2, valorecarta3,intervallo) == true)
                                 {
-                                    Console.WriteLine("Complimenti, hai indovinato! ");
+                                    Console.WriteLine("Complimenti, hai indovinato l'intervalo di valore! ");
+                                    Console.WriteLine("valore terza carta " + valorecarta3);
+                                    Thread.Sleep(2000);
+                                    Console.Clear();
+                                    Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
+                                    string richiesta4 = Console.ReadLine().ToUpper();
+                                    if (risposta(richiesta4) == true) 
+                                    { 
+                                    
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Grazie per aver giocato!");
+                                        Thread.Sleep(2000);
+                                        Console.Clear();
+                                        Console.WriteLine("Grazie per aver giocato!");
+                                    }
+
                                 }
                                 else
                                 {
-                                    Console.WriteLine("hai perso");
-                                    Thread.Sleep(2000);
-                                    Console.Clear();
-                                    Console.WriteLine("hai perso");
+                                    saluto();
                                 }
                             }
                         }
                         else
                         {
-                            Console.WriteLine("hai perso");
-                            Thread.Sleep(2000);
-                            Console.Clear();
-                            Console.WriteLine("hai perso");
+                            saluto();
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Grazie per aver giocato!");
-                        Thread.Sleep(2000);
-                        Console.Clear();
-                        Console.WriteLine("Grazie per aver giocato!");
+                        saluto();
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Non hai indovinato il colore della prima carta! hai perso");
-                    Thread.Sleep(2000);
-                    Console.Clear();
-                    Console.WriteLine("Non hai indovinato il colore della prima carta! hai perso");
+                    saluto();
                 }
             }
             else
             {
-                Console.WriteLine("Grazie per aver giocato!");
-                Thread.Sleep(2000);
-                Console.Clear();
-                Console.WriteLine("Grazie per aver giocato!");
+                saluto();
             }
         }
     }
