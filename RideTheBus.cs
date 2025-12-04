@@ -13,15 +13,46 @@ namespace ProgettoRideTheBus.Murizzi
     internal class Program
     {
         //generatore di carte
-        static int carta(){
-            Random random = new Random(1);
-            int carta = random.Next(1,14);
+        static int carta()
+        {
+            Random random = new Random();
+            int carta = random.Next(1, 14);
             return carta;
+        }
+        //convertitore di carta numero a figura
+        static string convertercarta(int cartautente)
+        {
+            if (cartautente == 1)
+            {
+                return "A";
+            }
+            else if (cartautente <= 10 && cartautente >= 2)
+            {
+                string cartautenteString = cartautente.ToString();
+
+                return cartautenteString;
+            }
+            else if (cartautente == 11)
+            {
+                return "J";
+            }
+            else if (cartautente == 12)
+            {
+                return "Q";
+            }
+            else if (cartautente == 13)
+            {
+                return "K";
+            }
+            else
+            {
+                return cartautente.ToString();
+            }
         }
         //generatore di colore (usato nel primo round)
         static bool colore(int primocolore)
         {
-            Random random = new Random(1);
+            Random random = new Random();
             int colore = random.Next(1, 3);
             if (primocolore == colore)
             {
@@ -35,12 +66,14 @@ namespace ProgettoRideTheBus.Murizzi
         //generatore di seme (usato nel quarto round)
         static int seme()
         {
-            Random random = new Random(1);
+            Random random = new Random();
             int seme = random.Next(1, 5);
             return seme;
         }
-        static string converterseme(int semeutente) { 
-            
+        //convertitore di seme da int a stringa
+        static string converterseme(int semeutente)
+        {
+
             if (semeutente == 1)
             {
                 return "Cuori";
@@ -77,7 +110,7 @@ namespace ProgettoRideTheBus.Murizzi
         //check della risposta intervallo
         static bool checkintervallo(int carta1, int carta2, int carta3, string intervallo)
         {
-            if (carta3 <= carta2 && carta3 >= carta1 && (intervallo =="Y")== true)
+            if (carta3 <= carta2 && carta3 >= carta1 && (intervallo == "Y") == true)
             {
                 return true;
             }
@@ -92,7 +125,7 @@ namespace ProgettoRideTheBus.Murizzi
         }
         //check della risposta Y/N
         static bool risposta(string risposta)
-            {
+        {
             if (risposta == "Y")
             {
                 return true;
@@ -102,6 +135,7 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
+        //saluto di fine gioco
         static void saluto()
         {
             Console.WriteLine("Grazie per aver giocato!");
@@ -128,7 +162,8 @@ namespace ProgettoRideTheBus.Murizzi
                 //primo round: indovina il colore della prima carta e stampa valore carta
                 Console.Clear();
                 int valorecarta1 = carta();
-                Console.Write($"Il valore della carta e' {valorecarta1}, ricordatelo!\n" +
+                string valorecarta1string = convertercarta(valorecarta1);
+                Console.Write($"Il valore della carta e' {valorecarta1string}, ricordatelo!\n" +
                 "Indovina il colore della prima carta\n" +
                 "1 per il colore ROSSO\n" +
                 "2 per il colore NERO\n" +
@@ -143,37 +178,38 @@ namespace ProgettoRideTheBus.Murizzi
                     if (risposta(richiesta2) == true)
                     {
                         Console.Clear();
-                        Console.WriteLine("prima carta= " + valorecarta1);
+                        Console.WriteLine("prima carta= " + valorecarta1string);
                         int valorecarta2 = carta();
+                        string valorecarta2string = convertercarta(valorecarta2);
                         Console.Write("Indovina se la seconda carta e' piu' alta o piu' bassa della prima carta\n" +
                             "inserisci H per piu' alta\n" +
                             "inserisci L per piu' bassa\n" +
                             "inserisci la tua risposta: ");
                         string altobasso = Console.ReadLine().ToUpper();
-                        Console.WriteLine("valore seconda carta= " + valorecarta2);
-                        if (checkaltobasso(valorecarta1,valorecarta2,altobasso) == true)
+                        Console.WriteLine("valore seconda carta= " + valorecarta2string);
+                        if (checkaltobasso(valorecarta1, valorecarta2, altobasso) == true)
                         {
                             Console.Clear();
                             Console.WriteLine("Hai indovinato! Complimenti, hai vinto!");
-                            Console.WriteLine("valore prima carta "+ valorecarta1);
-                            Console.WriteLine("valore seconda carta " + valorecarta2); 
+                            Console.WriteLine("valore prima carta " + valorecarta1string);
+                            Console.WriteLine("valore seconda carta " + valorecarta2string);
                             Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
                             string richiesta3 = Console.ReadLine().ToUpper();
                             if (risposta(richiesta3) == true)
                             {
                                 Console.Clear();
-                                Console.WriteLine("valore prima carta " + valorecarta1);
-                                Console.WriteLine("valore seconda carta " + valorecarta2);
+                                Console.WriteLine("valore prima carta " + valorecarta1string);
+                                Console.WriteLine("valore seconda carta " + valorecarta2string);
                                 int valorecarta3 = carta();
                                 Console.Write("la terza carta e' compresa nell'intervallo interno delle prime due carte? Y/N ");
                                 string intervallo = Console.ReadLine().ToUpper();
-                                if (checkintervallo(valorecarta1, valorecarta2, valorecarta3,intervallo) == true)
+                                if (checkintervallo(valorecarta1, valorecarta2, valorecarta3, intervallo) == true)
                                 {
                                     Console.WriteLine("Complimenti, hai indovinato l'intervalo di valore! ");
                                     Console.WriteLine("valore terza carta " + valorecarta3);
                                     Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
                                     string richiesta4 = Console.ReadLine().ToUpper();
-                                    if (risposta(richiesta4) == true) 
+                                    if (risposta(richiesta4) == true)
                                     {
                                         Console.Clear();
                                         int semecarta = seme();
@@ -189,8 +225,9 @@ namespace ProgettoRideTheBus.Murizzi
                                         {
                                             Console.WriteLine("Complimenti, hai indovinato il seme della quarta carta!");
                                             int valorecarta4 = carta();
+                                            string valorecarta4string = convertercarta(valorecarta4);
                                             string semecarta4String = converterseme(seme());
-                                            Console.WriteLine("valore quarta carta " + valorecarta4 + "\n1 per Cuori\n" + "2 per Quadri\n" + "3 per Fiori\n" + "4 per Picche\n");
+                                            Console.WriteLine("valore quarta carta " + valorecarta4string + "\n1 per Cuori\n" + "2 per Quadri\n" + "3 per Fiori\n" + "4 per Picche\n");
                                             Thread.Sleep(2000);
                                             Console.Clear();
                                             Console.WriteLine("Complimenti, hai completato tutti i round di Ride The Bus!");
@@ -201,28 +238,30 @@ namespace ProgettoRideTheBus.Murizzi
                                             Console.WriteLine("Mi dispiace, non hai indovinato il seme della quarta carta.");
                                             saluto();
                                         }
-                                        //Console.WriteLine("WIP");
                                     }
                                     else
                                     {
-                                        saluto();
+                                        Console.Clear();
+                                        Console.WriteLine("Mi dispiace, non hai indovinato l'intervallo, hai perso");
                                     }
-
                                 }
                                 else
                                 {
-                                    saluto();
+                                    Console.Clear();
+                                    Console.WriteLine("Mi dispiace, non hai indovinato l'intervallo, hai perso");
                                 }
                             }
                         }
                         else
                         {
-                            saluto();
+                            Console.Clear();
+                            Console.WriteLine("Mi dispiace, non hai indovinato se la seconda carta e' piu' alta o piu' bassa della prima carta, hai perso");
                         }
                     }
                     else
                     {
-                        saluto();
+                        Console.Clear();
+                        Console.WriteLine("Mi dispiace, non hai indovinato il colore della prima carta, hai perso");
                     }
                 }
                 else
