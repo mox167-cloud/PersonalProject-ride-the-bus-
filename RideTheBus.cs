@@ -12,6 +12,27 @@ namespace ProgettoRideTheBus.Murizzi
 {
     internal class Program
     {
+        //variabili globali
+
+        public static int saldo = 100;
+        public static int betiniziale = 0;
+        public static int betfinale = betiniziale;
+        public static string replay = "";
+
+        //funzione per l'inserimento della puntata iniziale
+        static void betinizialefunzione()
+        {
+            Console.WriteLine($"Il tuo saldo attuale e' di {saldo} monete");
+            Console.Write("inserisci la tua puntata iniziale: ");
+            betiniziale = int.Parse(Console.ReadLine());
+            while (betiniziale > saldo)
+            {
+                Console.Clear();
+                Console.WriteLine($"Non hai abbastanza monete per questa puntata, hai {saldo}, inserisci una puntata valida: ");
+                betiniziale = int.Parse(Console.ReadLine());
+            }
+        }
+
         //generatore di carte
         static int carta()
         {
@@ -19,6 +40,7 @@ namespace ProgettoRideTheBus.Murizzi
             int carta = random.Next(1, 14);
             return carta;
         }
+
         //convertitore di carta numero a figura
         static string convertercarta(int cartautente)
         {
@@ -29,7 +51,6 @@ namespace ProgettoRideTheBus.Murizzi
             else if (cartautente <= 10 && cartautente >= 2)
             {
                 string cartautenteString = cartautente.ToString();
-
                 return cartautenteString;
             }
             else if (cartautente == 11)
@@ -49,20 +70,20 @@ namespace ProgettoRideTheBus.Murizzi
                 return cartautente.ToString();
             }
         }
-        //generatore di colore (usato nel primo round)
-        static bool colore(int primocolore)
+
+        // *** NUOVA VERSIONE *** generatore di colore (usato nel primo round)
+        // 1 = indovinato, 2 = sbagliato
+        static int colore(int primocolore)
         {
-            Random random = new Random();
+            Random random = new Random(1);
             int colore = random.Next(1, 3);
+
             if (primocolore == colore)
-            {
-                return true;
-            }
+                return 1;   // indovinato
             else
-            {
-                return false;
-            }
+                return 2;   // sbagliato
         }
+
         //generatore di seme (usato nel quarto round)
         static int seme()
         {
@@ -70,10 +91,10 @@ namespace ProgettoRideTheBus.Murizzi
             int seme = random.Next(1, 5);
             return seme;
         }
+
         //convertitore di seme da int a stringa
         static string converterseme(int semeutente)
         {
-
             if (semeutente == 1)
             {
                 return "Cuori";
@@ -91,14 +112,15 @@ namespace ProgettoRideTheBus.Murizzi
                 return "Picche";
             }
         }
+
         //check della risposta alto/basso
         static bool checkaltobasso(int carta1, int carta2, string risposta)
         {
-            if (risposta == "H" && carta2 >= carta1)
+            if (risposta == "H" && carta2 > carta1)
             {
                 return true;
             }
-            else if (risposta == "L" && carta2 <= carta1)
+            else if (risposta == "L" && carta2 < carta1)
             {
                 return true;
             }
@@ -107,14 +129,15 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
+
         //check della risposta intervallo
         static bool checkintervallo(int carta1, int carta2, int carta3, string intervallo)
         {
-            if (carta3 <= carta2 && carta3 >= carta1 && (intervallo == "Y") == true)
+            if ((carta3 < carta2 && carta3 > carta1) && (intervallo == "Y") == true)
             {
                 return true;
             }
-            else if (carta3 >= carta2 || carta3 <= carta1 && (intervallo == "N") == true)
+            else if ((carta3 > carta2 || carta3 < carta1) && (intervallo == "N") == true)
             {
                 return true;
             }
@@ -123,6 +146,7 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
+
         //check della risposta Y/N
         static bool risposta(string risposta)
         {
@@ -135,144 +159,223 @@ namespace ProgettoRideTheBus.Murizzi
                 return false;
             }
         }
+
         //saluto di fine gioco
         static void saluto()
         {
             Console.WriteLine("Grazie per aver giocato!");
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             Console.Clear();
-            Console.WriteLine("Grazie per aver giocato!\n" +
-                "(premere un tasto qualsiai per uscire)");
+            saldo += betfinale;
+            Console.WriteLine($"hai vinto {betfinale} monete, il tuo saldo attuale ora e' di {saldo} monete");
+            replayfx();
+        }
+
+        // saluto in caso di perdita
+        static void salutoperdente()
+        {
+            Console.Clear();
+            Console.WriteLine($"Mi dispiace, non hai indovinato, hai perso {betiniziale} monete");
+            saldo -= betiniziale;
+            Console.WriteLine($"il tuo saldo attuale e' di {saldo} monete");
+        }
+
+        static void salutofinale()
+        {
+            Console.Clear();
+            Console.WriteLine("Grazie per aver giocato!");
+            Thread.Sleep(2000);
+            Console.Clear();
+        }
+
+        // richiesta di replay
+        static string replayfx()
+        {
+            Console.Write("Vuoi giocare di nuovo? Y/N ");
+            replay = Console.ReadLine().ToUpper();
+            return replay;
         }
 
         static void Main(string[] args)
         {
-            //introduzione e spiegazione del gioco
-            Console.WriteLine("Benvenuto in Ride The Bus di Murizzi Simone\n" +
-                "ecco alcune cose che devi sapere prima di continuare...\n" +
-                "alcune numeri corrispondono a determinate figure, ecco a te la legenda:\n" +
-                "A = 1\n" +
-                "J = 11\n" +
-                "Q = 12\n" +
-                "K = 13\n" +
-                "Vuoi giocare? Y/N");
-            string richiesta1 = Console.ReadLine().ToUpper();
-            if (risposta(richiesta1) == true)
+            do
             {
-                //primo round: indovina il colore della prima carta e stampa valore carta
-                Console.Clear();
-                int valorecarta1 = carta();
-                string valorecarta1string = convertercarta(valorecarta1);
-                Console.Write($"Il valore della carta e' {valorecarta1string}, ricordatelo!\n" +
-                "Indovina il colore della prima carta\n" +
-                "1 per il colore ROSSO\n" +
-                "2 per il colore NERO\n" +
-                "inserisci un numero: ");
-                int primocolore = int.Parse(Console.ReadLine());
-                bool primoround = colore(primocolore);
-                if (primoround == true)
+                //introduzione e spiegazione del gioco
+                Console.WriteLine("Benvenuto in Ride The Bus di Murizzi Simone\n" +
+                    "ecco alcune cose che devi sapere prima di continuare...\n" +
+                    "alcuni numeri corrispondono a determinate figure, ecco a te la legenda:\n" +
+                    "A = 1\n" +
+                    "J = 11\n" +
+                    "Q = 12\n" +
+                    "K = 13\n" +
+                    "Vuoi giocare? Y/N");
+                string richiesta1 = Console.ReadLine().ToUpper();
+                if (risposta(richiesta1) == true)
                 {
-                    Console.Write("Hai indovinato il colore della prima carta! Vuoi continuare? Y/N ");
-                    string richiesta2 = Console.ReadLine().ToUpper();
-                    // secondo round: indovina se la seconda carta e' piu' alta o piu' bassa della prima carta
-                    if (risposta(richiesta2) == true)
+                    Console.Clear();
+                    betinizialefunzione();
+
+                    // *** PRIMO ROUND ***
+                    Console.Clear();
+                    int valorecarta1 = carta();
+                    string valorecarta1string = convertercarta(valorecarta1);
+                    
+                    Console.Write($"Il valore della carta e' {valorecarta1string}, ricordatelo!\n" +
+                    "Indovina il colore della prima carta\n" +
+                    "1 per il colore ROSSO\n" +
+                    "2 per il colore NERO\n" +
+                    "inserisci un numero: ");
+
+                    int primocolore = int.Parse(Console.ReadLine());
+
+                    int primoround = colore(primocolore);
+
+                    if (primoround == 1)
                     {
-                        Console.Clear();
-                        Console.WriteLine("prima carta= " + valorecarta1string);
-                        int valorecarta2 = carta();
-                        string valorecarta2string = convertercarta(valorecarta2);
-                        Console.Write("Indovina se la seconda carta e' piu' alta o piu' bassa della prima carta\n" +
-                            "inserisci H per piu' alta\n" +
-                            "inserisci L per piu' bassa\n" +
-                            "inserisci la tua risposta: ");
-                        string altobasso = Console.ReadLine().ToUpper();
-                        Console.WriteLine("valore seconda carta= " + valorecarta2string);
-                        if (checkaltobasso(valorecarta1, valorecarta2, altobasso) == true)
+                        // VITTORIA
+                        betfinale = betiniziale * 2;
+                        Console.Write("Hai indovinato il colore della prima carta! Vuoi continuare? Y/N ");
+                        string richiesta2 = Console.ReadLine().ToUpper();
+
+                        // secondo round: indovina H/L
+                        if (risposta(richiesta2) == true)
                         {
                             Console.Clear();
-                            Console.WriteLine("Hai indovinato! Complimenti, hai vinto!");
-                            Console.WriteLine("valore prima carta " + valorecarta1string);
-                            Console.WriteLine("valore seconda carta " + valorecarta2string);
-                            Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
-                            string richiesta3 = Console.ReadLine().ToUpper();
-                            if (risposta(richiesta3) == true)
+                            Console.WriteLine("prima carta= " + valorecarta1string);
+
+                            int valorecarta2 = carta();
+                            string valorecarta2string = convertercarta(valorecarta2);
+                            Console.WriteLine(valorecarta2);
+                            Console.Write("Indovina se la seconda carta e' piu' alta o piu' bassa della prima carta\n" +
+                                "inserisci H per piu' alta\n" +
+                                "inserisci L per piu' bassa\n" +
+                                "inserisci la tua risposta: ");
+
+                            string altobasso = Console.ReadLine().ToUpper();
+                            Console.WriteLine("valore seconda carta= " + valorecarta2string);
+
+                            if (checkaltobasso(valorecarta1, valorecarta2, altobasso) == true)
                             {
+                                betfinale = betiniziale * 3;
                                 Console.Clear();
+                                Console.WriteLine("Hai indovinato! Complimenti, hai vinto!");
                                 Console.WriteLine("valore prima carta " + valorecarta1string);
                                 Console.WriteLine("valore seconda carta " + valorecarta2string);
-                                int valorecarta3 = carta();
-                                Console.Write("la terza carta e' compresa nell'intervallo interno delle prime due carte? Y/N ");
-                                string intervallo = Console.ReadLine().ToUpper();
-                                if (checkintervallo(valorecarta1, valorecarta2, valorecarta3, intervallo) == true)
+
+                                Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
+                                string richiesta3 = Console.ReadLine().ToUpper();
+
+                                if (risposta(richiesta3) == true)
                                 {
-                                    Console.WriteLine("Complimenti, hai indovinato l'intervalo di valore! ");
-                                    Console.WriteLine("valore terza carta " + valorecarta3);
-                                    Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
-                                    string richiesta4 = Console.ReadLine().ToUpper();
-                                    if (risposta(richiesta4) == true)
+                                    betfinale = betiniziale * 4;
+                                    Console.Clear();
+                                    Console.WriteLine("valore prima carta " + valorecarta1string);
+                                    Console.WriteLine("valore seconda carta " + valorecarta2string);
+                                    
+                                    int valorecarta3 = carta();
+                                    Console.WriteLine(valorecarta3);
+                                    Console.Write("la terza carta e' compresa nell'intervallo interno delle prime due carte? Y/N ");
+                                    string intervallo = Console.ReadLine().ToUpper();
+
+                                    if (checkintervallo(valorecarta1, valorecarta2, valorecarta3, intervallo) == true)
                                     {
-                                        Console.Clear();
-                                        int semecarta = seme();
-                                        Console.WriteLine(semecarta);
-                                        Console.Write("Indovina il seme della quarta carta\n" +
-                                            "1 per Cuori\n" +
-                                            "2 per Quadri\n" +
-                                            "3 per Fiori\n" +
-                                            "4 per Picche\n" +
-                                            "inserisci un numero: ");
-                                        int semeutente = int.Parse(Console.ReadLine());
-                                        if (semecarta == semeutente)
+                                        Console.WriteLine("Complimenti, hai indovinato l'intervalo di valore! ");
+                                        Console.WriteLine("valore terza carta " + valorecarta3);
+
+                                        Console.Write("Complimenti, hai indovinato l'intervallo di valore! Vuoi continuare? Y/N ");
+                                        string richiesta4 = Console.ReadLine().ToUpper();
+
+                                        if (risposta(richiesta4) == true)
                                         {
-                                            Console.WriteLine("Complimenti, hai indovinato il seme della quarta carta!");
-                                            int valorecarta4 = carta();
-                                            string valorecarta4string = convertercarta(valorecarta4);
-                                            string semecarta4String = converterseme(seme());
-                                            Console.WriteLine("valore quarta carta " + valorecarta4string + "\n1 per Cuori\n" + "2 per Quadri\n" + "3 per Fiori\n" + "4 per Picche\n");
-                                            Thread.Sleep(2000);
                                             Console.Clear();
-                                            Console.WriteLine("Complimenti, hai completato tutti i round di Ride The Bus!");
+                                            int semecarta = seme();
+                                            Console.WriteLine(semecarta);
+                                            Console.Write("Indovina il seme della quarta carta\n" +
+                                                "1 per Cuori\n" +
+                                                "2 per Quadri\n" +
+                                                "3 per Fiori\n" +
+                                                "4 per Picche\n" +
+                                                "inserisci un numero: ");
+
+                                            int semeutente = int.Parse(Console.ReadLine());
+
+                                            if (semecarta == semeutente)
+                                            {
+                                                betfinale = betiniziale * 20;
+                                                Console.WriteLine("Complimenti, hai indovinato il seme della quarta carta!");
+
+                                                int valorecarta4 = carta();
+                                                string valorecarta4string = convertercarta(valorecarta4);
+                                                string semecarta4String = converterseme(seme());
+
+                                                Thread.Sleep(2000);
+                                                Console.Clear();
+                                                Console.WriteLine("Complimenti, hai completato tutti i round di Ride The Bus!");
+                                                saluto();
+                                            }
+                                            else
+                                            {
+                                                saluto();
+                                            }
+                                        }
+                                        else if (risposta(richiesta4) == false)
+                                        {
                                             saluto();
                                         }
                                         else
                                         {
-                                            Console.WriteLine("Mi dispiace, non hai indovinato il seme della quarta carta.");
-                                            saluto();
+                                            salutoperdente();
                                         }
+                                    }
+                                    else if (checkintervallo(valorecarta1, valorecarta2, valorecarta3, intervallo) == false)
+                                    {
+                                        salutoperdente();
                                     }
                                     else
                                     {
-                                        Console.Clear();
-                                        Console.WriteLine("Mi dispiace, non hai indovinato l'intervallo, hai perso");
+                                        saluto();
                                     }
+                                }
+                                else if (risposta(richiesta3) == false)
+                                {
+                                    saluto();
                                 }
                                 else
                                 {
-                                    Console.Clear();
-                                    Console.WriteLine("Mi dispiace, non hai indovinato l'intervallo, hai perso");
+                                    salutoperdente();
                                 }
                             }
+                            else if (checkaltobasso(valorecarta1, valorecarta2, altobasso) == false)
+                            {
+                                saluto();
+                            }
+                        }
+                        else if (risposta(richiesta2) == false)
+                        {
+                            saluto();
                         }
                         else
                         {
-                            Console.Clear();
-                            Console.WriteLine("Mi dispiace, non hai indovinato se la seconda carta e' piu' alta o piu' bassa della prima carta, hai perso");
+                            salutoperdente();
                         }
+                    }
+                    else if (primoround == 2)
+                    {
+                        saluto();
                     }
                     else
                     {
-                        Console.Clear();
-                        Console.WriteLine("Mi dispiace, non hai indovinato il colore della prima carta, hai perso");
+                        salutoperdente();
                     }
                 }
                 else
                 {
                     saluto();
                 }
-            }
-            else
-            {
-                saluto();
-            }
+
+            } while (saldo > 0 && risposta(replay) == true);
+
+            salutofinale();
         }
     }
 }
